@@ -1,0 +1,12 @@
+variable "rg_name" {}
+variable "location" {}
+variable "databricks_workspace_url" {}
+variable "resource_prefix" {}
+variable "email_notifier" {}
+variable "email_id" {}
+variable "project" {}
+variable "organizationname" {}
+variable client_id {}
+variable "client_secret" {}
+variable "tenant_id" {}
+variable "databricks_cluster_name" {}
