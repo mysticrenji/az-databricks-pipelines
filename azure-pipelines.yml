@@ -1,19 +1,149 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  branches:
+    include:
+      - main
+  paths:
+    include:
+    - '*'
+    exclude:
+    - README.md
+    
+pool: Kubernetes
+variables:
+- group: Dev-Variables
 
-pool:
-  vmImage: ubuntu-latest
+stages:
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- stage: 'Terraform_Configuration'
+  displayName: 'Terraform Config Validation'
+  jobs:
+  - job: 'Terraform_Validate'
+    workspace:
+      clean: all
+    steps:
+    - script: |
+            terraform init \
+              -backend-config="storage_account_name=$(TF_STATE_BLOB_ACCOUNT_NAME)" \
+              -backend-config="container_name=$(TF_STATE_BLOB_CONTAINER_NAME)" \
+              -backend-config="key=$(TF_STATE_BLOB_FILE)" \
+              -backend-config="access_key=$(ARM_ACCESS_KEY)"
+            terraform fmt
+            terraform validate
+      displayName: 'Terraform Validate'
+      workingDirectory: "$(Build.SourcesDirectory)/terraform"
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- stage: 'Terraform_Plan'
+  displayName: 'Terraform Plan'
+  jobs:
+  - job: 'Terraform_Plan'
+    steps:
+    - script: |
+            terraform init \
+              -backend-config="storage_account_name=$(TF_STATE_BLOB_ACCOUNT_NAME)" \
+              -backend-config="container_name=$(TF_STATE_BLOB_CONTAINER_NAME)" \
+              -backend-config="key=$(TF_STATE_BLOB_FILE)" \
+              -backend-config="access_key=$(ARM_ACCESS_KEY)"
+              plan=$(System.ArtifactsDirectory)/plan-app.tfplan
+              terraform plan -input=false -out $plan
+              terraform show -no-color -json $plan  > $(System.ArtifactsDirectory)/plan-app.json
+      env:
+        TF_VAR_appdescription: $(TF_VAR_appdescription)
+        TF_VAR_applicationname: $(TF_VAR_applicationname)
+        TF_VAR_cluster_address: $(TF_VAR_cluster_address)
+        TF_VAR_cluster_ca_path: $(TF_VAR_cluster_ca_path)
+        TF_VAR_cluster_token: $(TF_VAR_cluster_token)
+        TF_VAR_clustername: $(TF_VAR_clustername)
+        TF_VAR_dockerimage: $(TF_VAR_dockerimage)
+        TF_VAR_frameworkname: $(TF_VAR_frameworkname)
+        TF_VAR_plan: $(TF_VAR_plan)
+        TF_VAR_provisioner: $(TF_VAR_provisioner)
+        TF_VAR_security_flag: $(TF_VAR_security_flag)
+        TF_VAR_shipahost: $(TF_VAR_shipahost)
+        TF_VAR_shipatoken: $(TF_VAR_shipatoken)
+        TF_VAR_teamname: $(TF_VAR_teamname)
+        TF_VAR_teamtag: $(TF_VAR_teamtag)
+      displayName: 'Terraform Plan'
+      workingDirectory: "$(Build.SourcesDirectory)/terraform"
+
+    - script: |
+              cat plan-app.json
+              echo "##vso[task.setvariable variable=PLAN;isOutput=true]$(cat plan-app.json)"
+      name: plan
+      displayName: 'Convert Plan'
+      workingDirectory: "$(System.ArtifactsDirectory)"
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Artifacts
+      inputs:
+        PathtoPublish: '$(System.ArtifactsDirectory)'
+        ArtifactName: 'tfplan_artifact'
+        publishLocation: 'Container'
+
+- stage: 'Terraform_Plan_Validate'
+  displayName: 'Terraform Plan Validation'
+  jobs:
+  - job : Review_plan
+    displayName: Review Plan
+    variables: 
+      json:   $[ stageDependencies.Terraform_Plan.Terraform_Plan.outputs['plan.PLAN'] ]
+    steps:
+    - script: |
+          echo "Terraform Plan"
+          echo "-----------------------------------------------"
+          echo "$(json)"
+      displayName: Plan
+
+  - job: Mannual_Approval
+    displayName: Validate Terraform Plan 
+    pool: server
+    timeoutInMinutes: 4320 # job times out in 3 days
+    steps:
+    -  task: ManualValidation@0
+       timeoutInMinutes: 1440 # task times out in 1 day
+       inputs:
+          notifyUsers: |
+                 renjithvr11@gmail.com
+          instructions: |
+             Please validate the Terraform plan in the previous step and proceed.
+          onTimeout: 'resume'
+
+- stage: 'Terraform_Apply'
+  displayName: 'Terraform Apply'
+  jobs:
+  - job: 'Download_Artifacts'
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'tfplan_artifact'
+        downloadPath: '$(System.ArtifactsDirectory)'
+  - job: 'Terraform_Apply'
+    dependsOn: 'Download_Artifacts'
+    steps:
+    - script: |
+            ls $(Build.ArtifactStagingDirectory)
+            terraform init \
+              -backend-config="storage_account_name=$(TF_STATE_BLOB_ACCOUNT_NAME)" \
+              -backend-config="container_name=$(TF_STATE_BLOB_CONTAINER_NAME)" \
+              -backend-config="key=$(TF_STATE_BLOB_FILE)" \
+              -backend-config="access_key=$(ARM_ACCESS_KEY)"
+            terraform apply $(System.ArtifactsDirectory)/tfplan_artifact/plan-app.tfplan
+      env:
+        TF_VAR_appdescription: $(TF_VAR_appdescription)
+        TF_VAR_applicationname: $(TF_VAR_applicationname)
+        TF_VAR_cluster_address: $(TF_VAR_cluster_address)
+        TF_VAR_cluster_ca_path: $(TF_VAR_cluster_ca_path)
+        TF_VAR_cluster_token: $(TF_VAR_cluster_token)
+        TF_VAR_clustername: $(TF_VAR_clustername)
+        TF_VAR_dockerimage: $(TF_VAR_dockerimage)
+        TF_VAR_frameworkname: $(TF_VAR_frameworkname)
+        TF_VAR_plan: $(TF_VAR_plan)
+        TF_VAR_provisioner: $(TF_VAR_provisioner)
+        TF_VAR_security_flag: $(TF_VAR_security_flag)
+        TF_VAR_shipahost: $(TF_VAR_shipahost)
+        TF_VAR_shipatoken: $(TF_VAR_shipatoken)
+        TF_VAR_teamname: $(TF_VAR_teamname)
+        TF_VAR_teamtag: $(TF_VAR_teamtag)
+      displayName: 'Terraform Apply'
+      workingDirectory:  "$(Build.SourcesDirectory)/terraform"
