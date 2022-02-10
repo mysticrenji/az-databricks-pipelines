@@ -1,5 +1,2 @@
-variable "project" {
-}
-
-variable "project_description" {
-}
+variable "project" {}
+variable "project_description" {}
