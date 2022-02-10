@@ -8,7 +8,6 @@ trigger:
     exclude:
     - README.md
     
-pool: Kubernetes
 variables:
 - group: Dev-Variables
 

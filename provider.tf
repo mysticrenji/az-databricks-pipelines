@@ -16,11 +16,3 @@ terraform {
   }
 }
 
-provider "azurerm" {
-  features {}
-}
-
-provider "databricks" {}
-
-provider "azuredevops" {
-}
