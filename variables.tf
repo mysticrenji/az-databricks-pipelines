@@ -6,7 +6,7 @@ variable "organizationname" {
   default = "renjiravindranathan"
 }
 
-variable "organizationname" {
+variable "project_description" {
   default = "Databricks project"
 }
 
