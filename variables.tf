@@ -17,12 +17,6 @@ variable "location" {
   default = "West US"
 }
 
-variable "databricks_workspace_url" {
-  description = "The URL to the Azure Databricks workspace (must start with https://)"
-  type        = string
-  default     = "https://dataops-managment-dev"
-}
-
 variable "resource_prefix" {
   description = "The prefix to use when naming the notebook and job"
   type        = string
@@ -30,14 +24,11 @@ variable "resource_prefix" {
 }
 
 variable "email_notifier" {
-  description = "The email address to send job status to"
-  type        = list(string)
-  default     = ["renji.ravindranathan@gmail.com"]
+  default = ["renjithvr11@gmail.com"]
 }
 
-
 variable "email_id" {
-  default = "renji.ravindranathan@gmail.com"
+  default = "renjithvr11@gmail.com"
 }
 
 variable "backend_rg_group" {
@@ -45,7 +36,7 @@ variable "backend_rg_group" {
 }
 
 variable "backend_storage_name" {
-  default = "mystickenshin"
+  default = "storage"
 }
 
 variable "backend_container_name" {
@@ -61,5 +52,5 @@ variable "client_id" {}
 variable "client_secret" {}
 variable "tenant_id" {}
 variable "databricks_cluster_name" {
-  default ="databricks-development"
+  default = "databricks-development"
 }
