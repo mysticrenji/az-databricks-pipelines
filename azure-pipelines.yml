@@ -38,13 +38,13 @@ stages:
   - job: 'Terraform_Plan'
     steps:
     - script: |
+            az login --allow-no-subscriptions --tenant $(TF_VAR_tenant_id)
             terraform init \
               -backend-config="storage_account_name=$(TF_STATE_BLOB_ACCOUNT_NAME)" \
               -backend-config="container_name=$(TF_STATE_BLOB_CONTAINER_NAME)" \
               -backend-config="key=$(TF_STATE_BLOB_FILE)" \
               -backend-config="access_key=$(ARM_ACCESS_KEY)"
               plan=$(System.ArtifactsDirectory)/plan-app.tfplan
-              az login --allow-no-subscriptions --tenant $(TF_VAR_tenant_id)
               terraform plan -input=false -out $plan
               terraform show -no-color -json $plan  > $(System.ArtifactsDirectory)/plan-app.json
       env:
