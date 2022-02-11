@@ -44,7 +44,7 @@ stages:
               -backend-config="key=$(TF_STATE_BLOB_FILE)" \
               -backend-config="access_key=$(ARM_ACCESS_KEY)"
               plan=$(System.ArtifactsDirectory)/plan-app.tfplan
-              terraform plan -input=false -var "client_id=-out $plan
+              terraform plan -input=false -out $plan
               terraform show -no-color -json $plan  > $(System.ArtifactsDirectory)/plan-app.json
       env:
         TF_VAR_project: $(TF_VAR_project)
