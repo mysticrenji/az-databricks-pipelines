@@ -9,7 +9,8 @@ trigger:
     - README.md
     
 variables:
-- group: Dev-Variables
+- group: infra-Variables
+- group: project-Variables          
 
 stages:
 
