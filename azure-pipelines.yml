@@ -59,6 +59,9 @@ stages:
         TF_VAR_client_secret: $(TF_VAR_client_secret)
         TF_VAR_tenant_id: $(TF_VAR_tenant_id)
         TF_VAR_databricks_cluster_name: $(TF_VAR_databricks_cluster_name)
+        TF_VAR_AZDO_ORG_SERVICE_URL: $(TF_VAR_AZDO_ORG_SERVICE_URL)
+        TF_VAR_TF_VAR_AZDO_PERSONAL_ACCESS_TOKEN: $(TF_VAR_TF_VAR_AZDO_PERSONAL_ACCESS_TOKEN)
+        TF_VAR_TF_VAR_AZURE_SUBSCRIPTION_ID: $(TF_VAR_TF_VAR_AZURE_SUBSCRIPTION_ID)
       displayName: 'Terraform Plan'
       workingDirectory: "$(Build.SourcesDirectory)"
 
@@ -139,5 +142,8 @@ stages:
         TF_VAR_client_secret: $(TF_VAR_client_secret)
         TF_VAR_tenant_id: $(TF_VAR_tenant_id)
         TF_VAR_databricks_cluster_name: $(TF_VAR_databricks_cluster_name)
+        TF_VAR_AZDO_ORG_SERVICE_URL: $(TF_VAR_AZDO_ORG_SERVICE_URL)
+        TF_VAR_TF_VAR_AZDO_PERSONAL_ACCESS_TOKEN: $(TF_VAR_TF_VAR_AZDO_PERSONAL_ACCESS_TOKEN)
+        TF_VAR_TF_VAR_AZURE_SUBSCRIPTION_ID: $(TF_VAR_TF_VAR_AZURE_SUBSCRIPTION_ID)
       displayName: 'Terraform Apply'
       workingDirectory:  "$(Build.SourcesDirectory)"
