@@ -6,7 +6,6 @@ module "azure-devops" {
 
 module "azure-databricks" {
   source                   = "./modules/az-databricks"
-  databricks_workspace_url = var.databricks_workspace_url
   resource_prefix          = var.resource_prefix
   email_notifier           = var.email_notifier
   rg_name                  = var.rg_name

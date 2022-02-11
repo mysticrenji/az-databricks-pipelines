@@ -16,9 +16,7 @@ variable "rg_name" {
 variable "location" {
   default = "West US"
 }
-variable "databricks_workspace_url" {
-  default = "https://dev-workspace"
-}
+
 variable "resource_prefix" {
   description = "The prefix to use when naming the notebook and job"
   type        = string
