@@ -44,6 +44,7 @@ stages:
               -backend-config="key=$(TF_STATE_BLOB_FILE)" \
               -backend-config="access_key=$(ARM_ACCESS_KEY)"
               plan=$(System.ArtifactsDirectory)/plan-app.tfplan
+              az login --allow-no-subscriptions --tenant $(TF_VAR_tenant_id)
               terraform plan -input=false -out $plan
               terraform show -no-color -json $plan  > $(System.ArtifactsDirectory)/plan-app.json
       env:
@@ -124,6 +125,7 @@ stages:
               -backend-config="container_name=$(TF_STATE_BLOB_CONTAINER_NAME)" \
               -backend-config="key=$(TF_STATE_BLOB_FILE)" \
               -backend-config="access_key=$(ARM_ACCESS_KEY)"
+            az login --allow-no-subscriptions --tenant $(TF_VAR_tenant_id)
             terraform apply $(System.ArtifactsDirectory)/tfplan_artifact/plan-app.tfplan
       env:
         TF_VAR_project: $(TF_VAR_project)
