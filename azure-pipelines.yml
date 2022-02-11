@@ -44,20 +44,20 @@ stages:
               -backend-config="key=$(TF_STATE_BLOB_FILE)" \
               -backend-config="access_key=$(ARM_ACCESS_KEY)"
               plan=$(System.ArtifactsDirectory)/plan-app.tfplan
-              terraform plan -input=false -out $plan
+              terraform plan -input=false -var "client_id=-out $plan
               terraform show -no-color -json $plan  > $(System.ArtifactsDirectory)/plan-app.json
       env:
-        TF_VAR_appdescription: $(TF_VAR_project)
-        TF_VAR_applicationname: $(TF_VAR_organizationname)
-        TF_VAR_cluster_address: $(TF_VAR_rg_name)
-        TF_VAR_cluster_ca_path: $(TF_VAR_location)
-        TF_VAR_clustername: $(TF_VAR_resource_prefix)
-        TF_VAR_dockerimage: $(TF_VAR_email_notifier)
-        TF_VAR_frameworkname: $(TF_VAR_email_id)
-        TF_VAR_plan: $(TF_VAR_client_id)
-        TF_VAR_provisioner: $(TF_VAR_client_secret)
-        TF_VAR_security_flag: $(TF_VAR_tenant_id)
-        TF_VAR_shipahost: $(TF_VAR_databricks_cluster_name)
+        TF_VAR_project: $(TF_VAR_project)
+        TF_VAR_organizationname: $(TF_VAR_organizationname)
+        TF_VAR_rg_name: $(TF_VAR_rg_name)
+        TF_VAR_location: $(TF_VAR_location)
+        TF_VAR_resource_prefix: $(TF_VAR_resource_prefix)
+        TF_VAR_email_notifier: $(TF_VAR_email_notifier)
+        TF_VAR_email_id: $(TF_VAR_email_id)
+        TF_VAR_client_id: $(TF_VAR_client_id)
+        TF_VAR_client_secret: $(TF_VAR_client_secret)
+        TF_VAR_tenant_id: $(TF_VAR_tenant_id)
+        TF_VAR_databricks_cluster_name: $(TF_VAR_databricks_cluster_name)
       displayName: 'Terraform Plan'
       workingDirectory: "$(Build.SourcesDirectory)"
 
@@ -126,16 +126,16 @@ stages:
               -backend-config="access_key=$(ARM_ACCESS_KEY)"
             terraform apply $(System.ArtifactsDirectory)/tfplan_artifact/plan-app.tfplan
       env:
-        TF_VAR_appdescription: $(TF_VAR_project)
-        TF_VAR_applicationname: $(TF_VAR_organizationname)
-        TF_VAR_cluster_address: $(TF_VAR_rg_name)
-        TF_VAR_cluster_ca_path: $(TF_VAR_location)
-        TF_VAR_clustername: $(TF_VAR_resource_prefix)
-        TF_VAR_dockerimage: $(TF_VAR_email_notifier)
-        TF_VAR_frameworkname: $(TF_VAR_email_id)
-        TF_VAR_plan: $(TF_VAR_client_id)
-        TF_VAR_provisioner: $(TF_VAR_client_secret)
-        TF_VAR_security_flag: $(TF_VAR_tenant_id)
-        TF_VAR_shipahost: $(TF_VAR_databricks_cluster_name)
+        TF_VAR_project: $(TF_VAR_project)
+        TF_VAR_organizationname: $(TF_VAR_organizationname)
+        TF_VAR_rg_name: $(TF_VAR_rg_name)
+        TF_VAR_location: $(TF_VAR_location)
+        TF_VAR_resource_prefix: $(TF_VAR_resource_prefix)
+        TF_VAR_email_notifier: $(TF_VAR_email_notifier)
+        TF_VAR_email_id: $(TF_VAR_email_id)
+        TF_VAR_client_id: $(TF_VAR_client_id)
+        TF_VAR_client_secret: $(TF_VAR_client_secret)
+        TF_VAR_tenant_id: $(TF_VAR_tenant_id)
+        TF_VAR_databricks_cluster_name: $(TF_VAR_databricks_cluster_name)
       displayName: 'Terraform Apply'
       workingDirectory:  "$(Build.SourcesDirectory)"
