@@ -38,7 +38,7 @@ stages:
   - job: 'Terraform_Plan'
     steps:
     - script: |
-              az login --service-principal -u $(TF_VAR_client_id) -p $(TF_VAR_client_secret) --tenant $newUser.tenant --allow-no-subscriptions | Out-Null            
+              az login --service-principal -u $TF_VAR_client_id -p $TF_VAR_client_secret --tenant $TF_VAR_tenant_id --allow-no-subscriptions            
               terraform init \
               -backend-config="storage_account_name=$(TF_STATE_BLOB_ACCOUNT_NAME)" \
               -backend-config="container_name=$(TF_STATE_BLOB_CONTAINER_NAME)" \
@@ -123,7 +123,7 @@ stages:
     steps:
     - script: |
             ls $(Build.ArtifactStagingDirectory)
-            az login --service-principal -u $(TF_VAR_client_id) -p $(TF_VAR_client_secret) --tenant $newUser.tenant --allow-no-subscriptions | Out-Null            
+            az login --service-principal -u $TF_VAR_client_id -p $TF_VAR_client_secret --tenant $TF_VAR_tenant_id --allow-no-subscriptions            
             terraform init \
               -backend-config="storage_account_name=$(TF_STATE_BLOB_ACCOUNT_NAME)" \
               -backend-config="container_name=$(TF_STATE_BLOB_CONTAINER_NAME)" \
