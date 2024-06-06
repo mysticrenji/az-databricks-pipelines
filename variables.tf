@@ -36,7 +36,7 @@ variable "backend_rg_group" {
 }
 
 variable "backend_storage_name" {
-  default = "mystickenshin"
+  default = "az_storage_box"
 }
 
 variable "backend_container_name" {
