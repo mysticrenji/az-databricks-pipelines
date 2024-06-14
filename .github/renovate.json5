@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "enabledManagers": [
+    "terraform"
+  ],
+  "terraform": {
+    "enabled": true,
+    "fileMatch": [
+      ".*\\.tf$"
+    ]
+  },
+  "packageRules": [
+    {
+      "managers": ["terraform"],
+      "updateTypes": ["patch", "minor", "major"],
+      "enabled": true,
+      "automerge": true,
+      "automergeType": "pr",
+      "schedule": ["at any time"]
+    }
+  ],
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 10
+}
